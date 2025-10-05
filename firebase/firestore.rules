@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId &&
+        request.resource.data.textScale in [1.0, 1.5, 2.0] &&
+        request.resource.data.notificationsEnabled is bool &&
+        request.resource.data.preferredLanguage in ['de', 'en', 'tr'];
+    }
+
+    match /contacts/{userId}/items/{contactId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId &&
+        (request.resource.data.isEmergency != true ||
+         get(/databases/$(database)/documents/contacts/$(userId)/items).where('isEmergency', true).count() < 3);
+    }
+
+    match /checkins/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId &&
+        request.resource.data.frequency in ['daily', '2d', 'weekly'] &&
+        request.resource.data.enabled is bool;
+    }
+
+    match /emergency/{userId}/events/{eventId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+  }
+}
