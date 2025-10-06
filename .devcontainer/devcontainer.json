@@ -1,22 +1,10 @@
 {
-  "name": "Flutter Web Dev (manual install)",
+  "name": "Flutter Web Dev (manual)",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "customizations": {
     "vscode": {
       "extensions": ["Dart-Code.dart-code", "Dart-Code.flutter"]
     }
   },
-  "postCreateCommand": "bash -lc '\
-set -e; \
-echo Installing deps...; \
-sudo apt-get update -y && sudo apt-get install -y git curl unzip xz-utils libglu1-mesa clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev; \
-echo Cloning Flutter...; \
-mkdir -p /workspaces/.flutter && if [ ! -d /workspaces/.flutter/.git ]; then git clone https://github.com/flutter/flutter.git -b stable /workspaces/.flutter; fi; \
-echo export PATH=/workspaces/.flutter/bin:\\$PATH >> ~/.bashrc; \
-export PATH=/workspaces/.flutter/bin:$PATH; \
-flutter --version; \
-flutter config --enable-web; \
-flutter precache --web; \
-flutter pub get \
-'"
+  "postCreateCommand": "bash -lc 'set -e; sudo apt-get update -y && sudo apt-get install -y git curl unzip xz-utils libglu1-mesa clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev; mkdir -p /workspaces/.flutter && if [ ! -d /workspaces/.flutter/.git ]; then git clone https://github.com/flutter/flutter.git -b stable /workspaces/.flutter; fi; echo \"export PATH=/workspaces/.flutter/bin:\\$PATH\" >> ~/.bashrc; export PATH=/workspaces/.flutter/bin:$PATH; flutter --version; flutter config --enable-web; flutter pub get'"
 }
